@@ -87,7 +87,8 @@ class SingleLinkedList {
          * Оператор сравнения итераторов (в роли второго аргумента итератор)
          * Два итератора равны, если они ссылаются на один и тот же элемент списка, либо на end()
          */
-        [[nodiscard]] bool operator==(const BasicIterator<Type> &rhs) const noexcept {
+        template<class OtherType>
+        bool operator==(const BasicIterator<OtherType> &rhs) const noexcept  {
             return node_ == rhs.node_;
         }
 
@@ -278,9 +279,7 @@ public:
     // Очищает список за время O(N)
     void Clear() noexcept {
         while (head_.next_node != nullptr) {
-            Node *new_head = head_.next_node->next_node;
-            delete head_.next_node;
-            head_.next_node = new_head;
+            delete std::exchange(head_.next_node, head_.next_node->next_node);
         }
         size_ = 0;
     }
@@ -332,18 +331,17 @@ private:
     Node head_;
     size_t size_ = 0;
 
+
+    // Сложно было понять\додуматься... без подсказок наверное бы сам не понял, спасибо!
     template<typename T>
     void AuxiliaryMethod(T &elem) {
-        SingleLinkedList tmp_reverse;
-        for (auto it = elem.begin(); it != elem.end(); ++it) {
-            tmp_reverse.PushFront(*it);
+        SingleLinkedList tmp;
+        auto it = tmp.before_begin();
+        for (const auto& list : elem) {
+            tmp.InsertAfter(it, list);
+            ++it;
         }
-
-        SingleLinkedList elem_copy;
-        for (auto it = tmp_reverse.begin(); it != tmp_reverse.end(); ++it) {
-            elem_copy.PushFront(*it);
-        }
-        swap(elem_copy);
+        swap(tmp);
     }
 };
 
