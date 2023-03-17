@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 project(cpp_single_linked_list)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(single-linked-list)
 
